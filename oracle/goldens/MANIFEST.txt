@@ -1,0 +1,25 @@
+DRUNet PyTorch goldens — fp32, CPU, NCHW, C-contiguous.
+checkpoint: weights/drunet_color.pth (cszn/KAIR v1.0 release, MIT)
+constructor: UNetRes(in_nc=4, out_nc=3, nc=[64,128,256,512], nb=4,
+             act_mode='R', downsample_mode='strideconv', upsample_mode='convtranspose')
+input: RGB [0,1] + a CONSTANT 4th plane = sigma/255. Size must be divisible by 8.
+
+resblock_in.npy                (1, 64, 32, 32)          min=-4.191509 max=+4.707117
+resblock_out.npy               (1, 64, 32, 32)          min=-7.399796 max=+7.684585
+down_in.npy                    (1, 64, 32, 32)          min=-4.191509 max=+4.707117
+down_out.npy                   (1, 128, 16, 16)         min=-2.412933 max=+2.045595
+up_in.npy                      (1, 512, 16, 16)         min=-4.303806 max=+4.710182
+up_out.npy                     (1, 256, 32, 32)         min=-2.074227 max=+2.230083
+head_in.npy                    (1, 4, 32, 32)           min=-3.747832 max=+3.244063
+head_out.npy                   (1, 64, 32, 32)          min=-1.493414 max=+1.207255
+tail_in.npy                    (1, 64, 32, 32)          min=-4.363079 max=+3.978808
+tail_out.npy                   (1, 3, 32, 32)           min=-1.884397 max=+1.690811
+full_rgb_in.npy                (1, 3, 128, 128)         min=+0.000000 max=+0.988405
+full_sigma0_in.npy             (1, 4, 128, 128)         min=+0.000000 max=+0.988405
+full_sigma0_out.npy            (1, 3, 128, 128)         min=+0.000025 max=+0.986007
+full_sigma15_in.npy            (1, 4, 128, 128)         min=+0.000000 max=+0.988405
+full_sigma15_out.npy           (1, 3, 128, 128)         min=+0.182687 max=+0.821122
+full_sigma25_in.npy            (1, 4, 128, 128)         min=+0.000000 max=+0.988405
+full_sigma25_out.npy           (1, 3, 128, 128)         min=+0.186597 max=+0.808290
+full_sigma50_in.npy            (1, 4, 128, 128)         min=+0.000000 max=+0.988405
+full_sigma50_out.npy           (1, 3, 128, 128)         min=+0.185006 max=+0.814692

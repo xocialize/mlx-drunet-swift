@@ -1,0 +1,20 @@
+mlx-drunet-swift
+================
+
+Port code: MIT (this repository).
+
+Upstream model and weights
+--------------------------
+DPIR / DRUNet — https://github.com/cszn/DPIR
+Zhang et al., "Plug-and-Play Image Restoration with Deep Denoiser Prior",
+IEEE TPAMI 2021.
+
+License: MIT. See LICENSE-upstream.
+
+Weights are published first-party by the same author in the cszn/KAIR release
+v1.0 (https://github.com/cszn/KAIR/releases/tag/v1.0), whose LICENSE is MIT.
+
+NOTE: third-party mirrors exist on Hugging Face (deepinv/drunet) carrying a
+bsd-3-clause tag. That is the DeepInverse *library's* licence applied across
+their org and does not reflect this model's upstream MIT. This port does not
+use those mirrors.
