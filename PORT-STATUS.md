@@ -111,3 +111,60 @@ curl -sLO https://github.com/cszn/KAIR/releases/download/v1.0/drunet_color.pth  
 .venv/bin/python verify.py && .venv/bin/python gen_goldens.py && .venv/bin/python convert.py
 cd .. && swift run drunet-gate --all oracle/goldens oracle/converted/drunet_color/model.safetensors
 ```
+
+---
+
+## Stage 2 — package ✅ (2026-07-27)
+
+`MLXDRUNet.DRUNetRestorePackage` — the **fourth** package on `imageRestore`, and the **first that
+honours a strength dial**.
+
+### Contract 1.30.0 was added for this row
+
+`imageRestore` had no strength parameter, because NAFNet, FFTformer and Restormer all bake their
+level into the checkpoint — you pick a model, not a level. DRUNet takes the level as a genuine
+*input*, so the capability grew an **optional** `ImageRestoreRequest.strength` (0…1) and
+`ImageRestoreResponse.appliedStrength`. Both defaulted, so the three existing backers are untouched
+and simply ignore them.
+
+`appliedStrength == nil` is the honest signal that a backer has **no** dial, as distinct from a dial
+that did nothing — a UI greys the control, a planner routes elsewhere. `descriptor(supportsStrength:)`
+keeps the parameter off the surface of packages that would ignore it.
+
+Engine **v0.39.0**, pushed.
+
+### strength → σ
+
+| strength | 0 | 0.5 | 1.0 | omitted |
+|---|---|---|---|---|
+| σ | 0 | 25 | **50** | **15** |
+
+`maxSigma` stops at **50** — the paper's top *reported* level — rather than the nominal 0…255 range,
+so `strength: 1.0` means "as strong as the authors characterised" and not an extrapolation. Omitting
+strength gives σ 15, the mildest reported level, so "just clean it up" cannot smear an already-clean
+image. Out-of-range input clamps.
+
+⚠️ **This mapping is a product decision, not a calibration.** σ nominally means "the AWGN standard
+deviation of the input"; choosing σ *automatically* for a real photograph needs a measured per-ISO
+characterisation — corpus **C5**, which now also asks for a dark frame per ISO precisely because of
+this row.
+
+### Footprint — ✅ measured
+
+```
+[drunet-color] SPLIT floor=0.16GB peak=6.71GB act=6.56GB retain=2.49GB
+               engine=0.20GB reserve=6.50GB load=0.0s run=1.6s   @1920x1080
+```
+
+Declared resident 200 MB / activation 7.0 GB, with margin above measured.
+
+⚠️ **No tiling.** A plain conv U-Net has no channel blow-up, so full-frame is viable at 1080p where
+FFTformer's 6× expansion was not. But activation is therefore **linear in resolution**, unlike the
+tiled siblings whose peak is flat — a 4K frame will cost roughly 4× this. **Tile before claiming 4K.**
+
+Conformance **12/12**, including four tests that pin the dial: the descriptor must advertise
+`strength`, the σ endpoints and default are pinned, out-of-range clamps, and `maxSigma` stays within
+the characterised range.
+
+**Published:** [`mlx-community/DRUNet-color-fp32`](https://huggingface.co/mlx-community/DRUNet-color-fp32).
+Round-trip verified — freshly downloaded artifact re-passed S0.
