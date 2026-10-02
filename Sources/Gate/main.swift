@@ -96,7 +96,7 @@ let args = Array(CommandLine.arguments.dropFirst())
 guard let mode = args.first else {
     print("usage: drunet-gate --s0 <weights> | --s1|--s2|--all <goldens> <weights>"); exit(2)
 }
-Device.setDefault(device: .cpu)
+Device.setDefault(device: Device(.cpu))
 switch mode {
 case "--s0":
     guard args.count >= 2 else { fail("--s0 needs weights") }
